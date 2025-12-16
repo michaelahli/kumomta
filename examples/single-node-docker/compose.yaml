@@ -11,6 +11,7 @@ services:
     restart: unless-stopped
     ports:
       - 25:2525
+      - 587:587
     depends_on:
       tsa:
         condition: service_healthy
@@ -23,7 +24,7 @@ services:
       - ./policy:/opt/kumomta/etc/policy
     restart: unless-stopped
     healthcheck:
-        test: /opt/kumomta/sbin/validate-shaping /opt/kumomta/etc/policy/shaping.toml || exit 1
-        interval: 1s
-        timeout: 2s
-        retries: 3
+      test: /opt/kumomta/sbin/validate-shaping /opt/kumomta/etc/policy/shaping.toml || exit 1
+      interval: 1s
+      timeout: 2s
+      retries: 3

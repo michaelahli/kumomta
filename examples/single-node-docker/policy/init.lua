@@ -24,6 +24,9 @@ local DOCKER_NETWORK = docker_utils.resolve_docker_network()
 -- about them until it is restarted and shaper.setup_publish()
 -- is called again.
 local tsa_publish = docker_utils.resolve_tsa_endpoints()
+local host = os.getenv 'SMTP_HOST'
+local user = os.getenv 'SMTP_USER'
+local pass = os.getenv 'SMTP_PASS'
 
 local shaper = shaping:setup_with_automation {
   publish = tsa_publish,
@@ -33,7 +36,6 @@ local shaper = shaping:setup_with_automation {
 
 --[[ Start of INIT section ]]
 --
-
 kumo.on('init', function()
   kumo.start_esmtp_listener {
     listen = '0.0.0.0:2525',
@@ -43,6 +45,12 @@ kumo.on('init', function()
   kumo.start_http_listener {
     listen = '0.0.0.0:8000',
     trusted_hosts = { '127.0.0.0/24', '::1', DOCKER_NETWORK },
+  }
+
+  kumo.start_esmtp_listener {
+    listen = '0.0.0.0:587',
+    hostname = host,
+    relay_hosts = { '0.0.0.0/0' },
   }
 
   kumo.define_spool {
@@ -71,5 +79,19 @@ end)
 
 --[[ Start of Non-INIT level config ]]
 --
+
+kumo.on('smtp_server_auth_plain', function(authz, authc, password, conn_meta)
+  if not user or not pass then
+    return false
+  end
+  local password_database = {
+    [user] = pass,
+  }
+  if password == '' then
+    return false
+  end
+  return password_database[authc] == password
+end)
+
 -- PLEASE read https://docs.kumomta.com/ for extensive documentation on customizing this config.
 --[[ End of Non-INIT level config ]]
