@@ -4,10 +4,16 @@ This directory contains a basic configuration that will spawn
 both kumod (the MTA process) and tsa-daemon (the traffic shaping
 automation daemon) from a single docker compose file.
 
+First apply environment variables:
+
+```
+cp .env.example .env
+```
+
 Use this to start the daemons and view the logs:
 
 ```console
-$ docker compose up
+docker compose up
 ```
 
 The service will spawn and bind to port 25 on the host system.
@@ -23,12 +29,11 @@ $ docker run --rm -it --net host nicolaka/netshoot \
 View shaping rules applied to a domain:
 
 ```console
-$ docker exec -t kumod /opt/kumomta/sbin/resolve-shaping-domain example.com
+docker exec -t kumod /opt/kumomta/sbin/resolve-shaping-domain example.com
 ```
 
 Trace submissions in realtime:
 
 ```console
-$ docker exec -t kumod kcli trace-smtp-server
+docker exec -t kumod kcli trace-smtp-server
 ```
-
