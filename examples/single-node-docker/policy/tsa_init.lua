@@ -1,6 +1,6 @@
 local tsa = require 'tsa'
 local kumo = require 'kumo'
-local docker_utils = require 'docker_utils'
+local docker_utils = require 'policy-extras.docker_utils'
 
 local DOCKER_NETWORK = docker_utils.resolve_docker_network()
 
